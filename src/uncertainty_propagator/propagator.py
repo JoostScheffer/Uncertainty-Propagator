@@ -25,7 +25,8 @@ def symbol_to_error_symbol(symbol: sp.Symbol) -> sp.Symbol:
 
     Returns
     -------
-        sp.Symbol: The error symbol corresponding to the input symbol.
+    sp.Symbol: 
+        The error symbol corresponding to the input symbol.
     """
     return sp.Symbol(f"\sigma_{symbol}")
 
@@ -33,20 +34,21 @@ def symbol_to_error_symbol(symbol: sp.Symbol) -> sp.Symbol:
 def generate_error_propagation_function(function: sp.Expr) -> sp.Expr:
     """Generates an error propagation function for a given mathematical expression.
 
-    ..note::
-
-        Uses the formula:
-        $$ \sqrt{\left(\frac{\partial f}{\partial x_1} \cdot \sigma_{x_1}\right)^2 + \left(\frac{\partial f}{\partial x_2} \cdot \sigma_{x_2}\right)^2 + \ldots} $$
-        Which assumes uncorrelated errors.
+    Uses the formula:
+    $$ 
+    \sqrt{\left(\frac{\partial f}{\partial x_1} \cdot \sigma_{x_1}\right)^2 + \left(\frac{\partial f}{\partial x_2} \cdot \sigma_{x_2}\right)^2 + \ldots} 
+    $$
+    Which assumes uncorrelated errors.
 
     Parameters
     ----------
-    function (sp.Expr): 
+    function: sp.Expr 
         The mathematical expression for which the error propagation function is generated.
 
     Returns
     -------
-        sp.Expr: The error propagation function.
+    sp.Expr: 
+        The error propagation function.
     """
     symbols = list(function.free_symbols)
     error_symbols = [symbol_to_error_symbol(symbol) for symbol in symbols]
@@ -68,31 +70,31 @@ class VariableInputRow(widgets.HBox):
 
     Attributes
     ----------
-        symbol (sp.Symbol): The symbol representing the variable.
-        post_update (callable): A function to be called after updating the variable.
-        n (float): The nominal value of the variable.
-        s (float): The standard deviation of the variable.
-        format_specifier (str): The format specifier for displaying the variable value.
-        valid (bool): Indicates if the variable input is valid.
-        n_is_valid (bool): Indicates if the nominal value input is valid.
-        s_is_valid (bool): Indicates if the standard deviation input is valid.
-        n_is_iter (bool): Indicates if the nominal value is an iterable.
-        n_is_uf (bool): Indicates if the nominal value is an instance of ufVar.
-        s_is_iter (bool): Indicates if the standard deviation is an iterable.
+    * symbol (sp.Symbol): The symbol representing the variable.
+    * post_update (callable): A function to be called after updating the variable.
+    * n (float): The nominal value of the variable.
+    * s (float): The standard deviation of the variable.
+    * format_specifier (str): The format specifier for displaying the variable value.
+    * valid (bool): Indicates if the variable input is valid.
+    * n_is_valid (bool): Indicates if the nominal value input is valid.
+    * s_is_valid (bool): Indicates if the standard deviation input is valid.
+    * n_is_iter (bool): Indicates if the nominal value is an iterable.
+    * n_is_uf (bool): Indicates if the nominal value is an instance of ufVar.
+    * s_is_iter (bool): Indicates if the standard deviation is an iterable.
 
     Methods
     -------
-        update(): Updates the variable.
-        _update_self(_change=None): Updates the variable and its visuals.
-        _process_n(): Processes the nominal value input.
-        _process_s(): Processes the standard deviation input.
-        _process_and_visualize(): Processes the inputs and visualizes the variable.
+    * update(): Updates the variable.
+    * _update_self(_change=None): Updates the variable and its visuals.
+    * _process_n(): Processes the nominal value input.
+    * _process_s(): Processes the standard deviation input.
+    * _process_and_visualize(): Processes the inputs and visualizes the variable.
 
     Notes
     -----
-        goals:
-        - manage a row of widgets for a variable
-        - manage the visuals, the logic and the variable itself
+    goals:
+    * manage a row of widgets for a variable
+    * manage the visuals, the logic and the variable itself
     """
 
     def __init__(
@@ -107,7 +109,7 @@ class VariableInputRow(widgets.HBox):
 
         Parameters
         ----------
-        symbol (sp.Symbol): 
+        symbol : sp.Symbol 
             The symbol representing the variable.
         post_update : callable (optional)
             A function to be called after updating the variable. Defaults to an empty function.
@@ -425,25 +427,27 @@ class VariableInputRow(widgets.HBox):
 class Propagator:
     """A class that represents a propagator for uncertainty propagation.
 
-    Attributes:
-        func (sp.Expr | str): The mathematical function to propagate uncertainty for.
-        defaults (dict[sp.Symbol : ufVar | list[ufVar]]): Default values for the symbols in the function.
+    Attributes
+    ----------
+    func (sp.Expr | str): The mathematical function to propagate uncertainty for.
+    defaults (dict[sp.Symbol : ufVar | list[ufVar]]): Default values for the symbols in the function.
 
-    Methods:
-        __init__(self, func: sp.Expr | str, defaults: dict[sp.Symbol : ufVar | list[ufVar]] = {}) -> None:
-            Initializes the Propagator object.
-        get_vars(self) -> list[dict[sp.Symbol : ufVar]]:
-            Returns a list of dictionaries containing the symbols and their corresponding values.
-        evaluate_function(self) -> list[float]:
-            Evaluates the function for each set of symbol values and returns the results.
-        evaluate_error_function(self) -> list[float]:
-            Evaluates the error function for each set of symbol values and returns the results.
-        update_rows(self, _change=None) -> None:
-            Updates the input rows with the current values.
-        write_to_output(self, text: str) -> None:
-            Writes the given text to the output widget.
-        validate(self) -> None:
-            Validates the inputs and updates the state of the evaluate button.
+    Methods
+    -------
+    __init__(self, func: sp.Expr | str, defaults: dict[sp.Symbol : ufVar | list[ufVar]] = {}) -> None:
+        Initializes the Propagator object.
+    get_vars(self) -> list[dict[sp.Symbol : ufVar]]:
+        Returns a list of dictionaries containing the symbols and their corresponding values.
+    evaluate_function(self) -> list[float]:
+        Evaluates the function for each set of symbol values and returns the results.
+    evaluate_error_function(self) -> list[float]:
+        Evaluates the error function for each set of symbol values and returns the results.
+    update_rows(self, _change=None) -> None:
+        Updates the input rows with the current values.
+    write_to_output(self, text: str) -> None:
+        Writes the given text to the output widget.
+    validate(self) -> None:
+        Validates the inputs and updates the state of the evaluate button.
     """
 
     def __init__(
