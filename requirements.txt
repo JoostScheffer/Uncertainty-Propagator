@@ -1,3 +1,5 @@
 ipywidgets
 sympy
 uncertainties
+tqdm
+numpy

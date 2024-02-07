@@ -3,9 +3,9 @@ from collections.abc import Iterable
 from datetime import datetime
 
 import ipywidgets as widgets
+from ipywidgets.widgets.widget import Widget
 import sympy as sp
 from IPython.display import display
-from ipywidgets.widgets.widget import Widget
 from tqdm.notebook import tqdm
 from uncertainties import ufloat as uf
 from uncertainties.core import Variable as ufVar
@@ -132,7 +132,7 @@ class VariableInputRow(widgets.HBox):
         # run the update function once
         self._update_self(None)
 
-        self.widgets_list: list[Widget] = [
+        self.widgets_list: list[widgets.widget.Widget] = [
             x for x in self.widgets.values() if isinstance(x, Widget)
         ]
 
