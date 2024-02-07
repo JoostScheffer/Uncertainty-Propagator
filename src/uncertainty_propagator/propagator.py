@@ -16,35 +16,37 @@ gray = "#f3f4f5"
 
 
 def symbol_to_error_symbol(symbol: sp.Symbol) -> sp.Symbol:
-    """
-    Converts a symbol to its corresponding error symbol.
+    """Converts a symbol to its corresponding error symbol.
 
-    Parameters:
-        symbol (sp.Symbol): The symbol to convert.
+    Parameters
+    ----------
+    symbol (sp.Symbol): 
+        The symbol to convert.
 
-    Returns:
+    Returns
+    -------
         sp.Symbol: The error symbol corresponding to the input symbol.
     """
     return sp.Symbol(f"\sigma_{symbol}")
 
 
 def generate_error_propagation_function(function: sp.Expr) -> sp.Expr:
-    """
-    Generates an error propagation function for a given mathematical expression.
+    """Generates an error propagation function for a given mathematical expression.
+
+    ..note::
+
+        Uses the formula:
+        $$ \sqrt{\left(\frac{\partial f}{\partial x_1} \cdot \sigma_{x_1}\right)^2 + \left(\frac{\partial f}{\partial x_2} \cdot \sigma_{x_2}\right)^2 + \ldots} $$
+        Which assumes uncorrelated errors.
 
     Parameters
     ----------
-        function (sp.Expr): The mathematical expression for which the error propagation function is generated.
+    function (sp.Expr): 
+        The mathematical expression for which the error propagation function is generated.
 
     Returns
     -------
         sp.Expr: The error propagation function.
-
-    Notes
-    -----
-        Uses the formula:
-        $$ \sqrt{\left(\frac{\partial f}{\partial x_1} \cdot \sigma_{x_1}\right)^2 + \left(\frac{\partial f}{\partial x_2} \cdot \sigma_{x_2}\right)^2 + \ldots} $$
-        Which assumes uncorrelated errors.
     """
     symbols = list(function.free_symbols)
     error_symbols = [symbol_to_error_symbol(symbol) for symbol in symbols]
@@ -100,7 +102,22 @@ class VariableInputRow(widgets.HBox):
         n: float = 1,
         s: float = 0.1,
         format_specifier: str = ".2ueP",
-    ) -> None:
+    ) -> ...:
+        """Initializes the VariableInputRow.
+
+        Parameters
+        ----------
+        symbol (sp.Symbol): 
+            The symbol representing the variable.
+        post_update : callable (optional)
+            A function to be called after updating the variable. Defaults to an empty function.
+        n : float (optional)
+            The nominal value of the variable. Defaults to 1.
+        s : float (optional)
+            The standard deviation of the variable. Defaults to 0.1.
+        format_specifier : str (optional)
+            The format specifier for displaying the variable value. Defaults to ".2ueP".
+        """
         self.symbol: sp.Symbol = symbol
         self.name: str = self.symbol.name
         self.n: float = n
@@ -138,10 +155,15 @@ class VariableInputRow(widgets.HBox):
 
         super().__init__(self.widgets_list)
 
-    def update(self):
+    def update(self) -> ...:
+        """Updates the variable."""
         self._update_self()
 
-    def _update_self(self, _change=None) -> None:
+    def _update_self(self, _change=None) -> ...:
+        """Updates the variable and its visuals.
+        
+        This is a support function and should not be called directly.
+        """
         # set default values
         self.widgets["n"].style.background = None
         self.widgets["s"].set_trait("disabled", False)
@@ -165,7 +187,11 @@ class VariableInputRow(widgets.HBox):
 
         self.post_update()
 
-    def _process_n(self) -> None:
+    def _process_n(self) -> ...:
+        """Processes the nominal value input.
+
+        This is a support function and should not be called directly.
+        """
         # if the input has 0 length
         if len(self.widgets["n"].value) == 0:
             self.widgets["n-state"].value = "field is empty"
@@ -238,7 +264,11 @@ class VariableInputRow(widgets.HBox):
         else:
             self.n_is_valid = False
 
-    def _process_s(self) -> None:
+    def _process_s(self) -> ...:
+        """Processes the standard deviation input.
+
+        This is a support function and should not be called directly.
+        """
         # if s is already set to valid it does not need to be checked
         # s can be valid because it was define by something in the n-field
         if self.s_is_valid:
@@ -319,8 +349,11 @@ class VariableInputRow(widgets.HBox):
         else:
             self.s_is_valid = False
 
-    def _process_and_visualize(self) -> None:
-        """
+    def _process_and_visualize(self) -> ...:
+        """Processes the inputs and visualizes the variable.
+
+        This is a support function and should not be called directly.
+
         - n is a uf
         - n and s are constants
         - n is an iterable and s is constant
@@ -390,8 +423,7 @@ class VariableInputRow(widgets.HBox):
 
 
 class Propagator:
-    """
-    A class that represents a propagator for uncertainty propagation.
+    """A class that represents a propagator for uncertainty propagation.
 
     Attributes:
         func (sp.Expr | str): The mathematical function to propagate uncertainty for.
@@ -418,17 +450,24 @@ class Propagator:
         self,
         func: sp.Expr | str,
         defaults: dict[sp.Symbol : ufVar | list[ufVar]] = {},
-    ) -> None:
-        """
-        Initialize the UncertaintyPropagationWidget.
+    ) -> ...:
+        """Initialize the UncertaintyPropagationWidget.
 
-        Parameters:
-        - func: The mathematical function to be evaluated. It can be either a sympy expression or a string.
-        - defaults: A dictionary containing default values for the symbols in the function. The keys are sympy symbols and the values can be either ufVar objects or lists of ufVar objects.
+        Parameters
+        ----------
+        func : sp.Expr or str
+            The mathematical function to be evaluated. It can be either a sympy 
+            expression or a string representing the expression.
+        defaults : dict[sp.Symbol : ufVar | list[ufVar]], optional
+            A dictionary containing default values for the symbols in the function. 
+            The keys are sympy symbols and the values can be either ufVar objects 
+            or lists of ufVar objects.
 
-        Raises:
-        - ValueError: If the function does not contain any symbols or if the defaults contain symbols that are not in the function.
-
+        Raises
+        ------
+        ValueError: 
+            If the function does not contain any symbols or if the defaults contain 
+            symbols that are not in the function.
         """
         # input sanitation
         if isinstance(func, str):
@@ -499,15 +538,16 @@ class Propagator:
         display(self.box)
 
     def get_vars(self) -> list[dict[sp.Symbol : ufVar]]:
-        """
-        Returns a list of dictionaries containing symbols and their corresponding uncertainty variables.
+        """Get a list of dictionaries containing symbols and their corresponding uncertainty variables.
 
         Each dictionary in the list represents a row of symbols and uncertainty variables.
         If a row contains a list of uncertainty variables, multiple dictionaries will be created,
         each representing a different combination of values from the list.
 
-        Returns:
-            list[dict[sp.Symbol : ufVar]]: A list of dictionaries containing symbols and uncertainty variables.
+        Returns
+        -------
+        list[dict[sp.Symbol : ufVar]]:
+            A list of dictionaries containing symbols and uncertainty variables.
         """
         # for each row, call the get function which should return either a list of ufs or a single uf
         row_uf_dict = {row.symbol: row.uf for row in self.rows}
@@ -557,14 +597,17 @@ class Propagator:
         return list_of_symbols_and_values
 
     def evaluate_function(self) -> list[float]:
-        """
-        Evaluates the function using the provided variable values and returns a list of floats.
+        """Evaluates the function using the provided variable values and returns a list of floats.
 
-        Returns:
-            list[float]: The evaluated function values as a list of floats.
+        Returns
+        -------
+        list[float]: 
+            The evaluated function values as a list of floats.
 
-        Raises:
-            ValueError: If not all results are floats, indicating a possible type error in the function.
+        Raises
+        ------
+        ValueError: 
+            If not all results are floats, indicating a possible type error in the function.
         """
         replacement_dict_list = self.get_vars()
         result = [
@@ -580,14 +623,17 @@ class Propagator:
         return result
 
     def evaluate_error_function(self) -> list[float]:
-        """
-        Evaluates the error function for a list of replacement dictionaries.
+        """Evaluates the error function for a list of replacement dictionaries.
 
-        Returns:
+        Returns
+        -------
+        list[float]:
             A list of floats representing the evaluated error function for each replacement dictionary.
 
-        Raises:
-            ValueError: If not all results are floats, indicating a possible type error in the function.
+        Raises
+        ------
+        ValueError: 
+            If not all results are floats, indicating a possible type error in the function.
         """
         replacement_dict_list = self.get_vars()
         result = [
@@ -604,26 +650,25 @@ class Propagator:
 
         return result
 
-    def update_rows(self, _change=None) -> None:
+    def update_rows(self, _change=None) -> ...:
+        """Updates the input rows with the current values."""
         # update the rows
         for row in self.rows:
             row.update()
 
         self.write_to_output("updated")
 
-    def write_to_output(self, text: str) -> None:
+    def write_to_output(self, text: str) -> ...:
+        """Writes the given text to the output widget."""
         with self.output:
             print(datetime.now().strftime("%H:%M:%S"), text)
 
-    def validate(self) -> None:
+    def validate(self) -> ...:
         """
         Validates the inputs and updates the state of the evaluate button accordingly.
 
         If all inputs are valid and have the same length, the evaluate button is enabled and
         styled as success. Otherwise, the evaluate button is disabled and styled as danger.
-
-        Returns:
-            None
         """
         everything_is_valid = False
 
