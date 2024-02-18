@@ -12,7 +12,7 @@
 First import the Propagator class from the propagator module.
 
 ```python
-from propagator import Propagator
+from uncertainty_propagator import Propagator
 import numpy as np
 ```
 
